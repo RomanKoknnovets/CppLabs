@@ -1,8 +1,46 @@
-﻿
+﻿#include <iostream>
+#include <vector>
+#include <cassert>
+using namespace std;
+#include "PlayField.h"
+#include "TreeNode.h"
 
-//Кохновец Роман Николаевич, группа РИ-280003
+//Кохновец Роман Николаевич, группа РИ-280003, лабораторная работа номер 4: Крестики-нолики
+
+int main()
+{
+    cout << "Hello World!" << endl;
+
+    
+    //в данном случае создастся пустое поле и посчитается статистика для игрока, чья очередь ходить (т.к. крестики первые, то для игрока за крестиков)
+    auto res = TreeNode().getStatistics();
+    cout << res[0] << " " << res[1] << " " << res[2] << endl; //первое - победы, второе - ничьи, третье - проигрыши
+
+    //можно посмотреть не для пустого поля:
+    //в данном случае первый игрок сходил в точку 1 1 крестиком, и считается статистика для второго, который за нолики
+    PlayField pf1 = PlayField().makeMove(PlayField::CellIdx(1, 1));
+    auto res1 = TreeNode(pf1).getStatistics();
+    cout << res1[0] << " " << res1[1] << " " << res1[2] << endl;
 
 
+    //ситуация   - о х
+    //           x x o
+    //           - о x
+    //"-" это ещё оставшиеся пустыми клетки
+    //следующий ход за ноликом и во всех(двух) случаях игрок за нолики проиграет, что можно проверить перебором, а т.к. случая два то перебор незатруднителен
+    PlayField pf2 = PlayField()
+        .makeMove(PlayField::CellIdx(0, 2))
+        .makeMove(PlayField::CellIdx(0, 1))
+        .makeMove(PlayField::CellIdx(1, 0))
+        .makeMove(PlayField::CellIdx(1, 2))
+        .makeMove(PlayField::CellIdx(1, 1))
+        .makeMove(PlayField::CellIdx(2, 1))
+        .makeMove(PlayField::CellIdx(2, 2));
+    auto res2 = TreeNode(pf2).getStatistics();
+    cout << res2[0] << " " << res2[1] << " " << res2[2];
+    return 0;
+}
+//Требования
 /*
  * Лабораторная работа №4
  *
@@ -64,45 +102,3 @@
  * обязательно пояснять в комментариях к коду.
  * Порядок вывода данных не регламентируется, но он должен быть читаемым и понятным.
 */
-#include <iostream>
-#include <vector>
-#include <cassert>
-using namespace std;
-#include "PlayField.h"
-#include "TreeNode.h"
-
-//Кохновец Роман Николаевич, группа РИ-280003
-
-int main()
-{
-    cout << "Hello World!" << endl;
-
-    
-    //в данном случае создастся пустое поле и посчитается статистика для игрока, чья очередь ходить (т.к. крестики первые, то для игрока за крестиков)
-    auto res = TreeNode().getStatistics();
-    cout << res[0] << " " << res[1] << " " << res[2] << endl; //первое - победы, второе - ничьи, третье - проигрыши
-
-    //можно посмотреть не для пустого поля:
-    //в данном случае первый игрок сходил в точку 1 1 крестиком, и считается статистика для второго, который за нолики
-    PlayField pf1 = PlayField().makeMove(PlayField::CellIdx(1, 1));
-    auto res1 = TreeNode(pf1).getStatistics();
-    cout << res1[0] << " " << res1[1] << " " << res1[2] << endl;
-
-
-    //ситуация   - о х
-    //           x x o
-    //           - о x
-    //"-" это ещё оставшиеся пустыми клетки
-    //следующий ход за ноликом и во всех(двух) случаях игрок за нолики проиграет, что можно проверить перебором, а т.к. случая два то перебор незатруднителен
-    PlayField pf2 = PlayField()
-        .makeMove(PlayField::CellIdx(0, 2))
-        .makeMove(PlayField::CellIdx(0, 1))
-        .makeMove(PlayField::CellIdx(1, 0))
-        .makeMove(PlayField::CellIdx(1, 2))
-        .makeMove(PlayField::CellIdx(1, 1))
-        .makeMove(PlayField::CellIdx(2, 1))
-        .makeMove(PlayField::CellIdx(2, 2));
-    auto res2 = TreeNode(pf2).getStatistics();
-    cout << res2[0] << " " << res2[1] << " " << res2[2];
-    return 0;
-}

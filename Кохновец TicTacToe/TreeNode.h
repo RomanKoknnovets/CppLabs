@@ -13,11 +13,13 @@ struct TreeNode
     bool isTerminal() const;
     void addChild(TreeNode child);
     TreeNode* operator[](int i);
-    int childCount();
+    int childCount() const;
     const PlayField* value();
-    int* getStatistics(PlayField::CellState forWhom = PlayField::CellState::csEmpty, int* res = new int[3]{ 0,0,0 });
+    void fillChildren();
+    int* getStatistics();
 private:
-    int childQty();
+    void getStatistics(PlayField::CellState forWhom, int* res);
+    int childQty() const;
 };
 
 #endif // !TREENODE_H

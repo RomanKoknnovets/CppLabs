@@ -20,7 +20,7 @@ TreeNode* TreeNode::operator[](int i)
     assert(i < (int)children.size());
     return &children[i];
 }
-int TreeNode::childCount()
+int TreeNode::childCount() const
 {
     return children.size();
 }
@@ -28,11 +28,15 @@ const PlayField* TreeNode::value()
 {
     return &current;
 }
-int* TreeNode::getStatistics(PlayField::CellState forWhom, int* res)
+int* TreeNode::getStatistics()
 {
-    if (forWhom == PlayField::CellState::csEmpty)
-        forWhom = current.nextIsCross ? PlayField::CellState::csCross : PlayField::CellState::csNought;
-
+    auto forWhom = current.nextIsCross ? PlayField::CellState::csCross : PlayField::CellState::csNought;
+    int* res = new int[3]{ 0, 0, 0 };
+    getStatistics(forWhom, res);
+    return res;
+}
+void TreeNode::getStatistics(PlayField::CellState forWhom, int* res)
+{
     bool forCrosses = (forWhom == PlayField::CellState::csCross);
 
     if (isTerminal())
@@ -63,19 +67,22 @@ int* TreeNode::getStatistics(PlayField::CellState forWhom, int* res)
             assert(0);
             break;
         }
-        return res;
+        return;
     }
 
+    fillChildren();
+
+    for (TreeNode tn : children)
+        tn.getStatistics(forWhom, res);
+}
+void TreeNode::fillChildren()
+{
     auto ec = current.getEmptyCells();
     if (childQty() > childCount())
         for (PlayField::CellIdx index : ec)
             addChild(TreeNode(this, index));
-
-    for (TreeNode tn : children)
-        tn.getStatistics(forWhom, res);
-    return res;
 }
-int TreeNode::childQty()
+int TreeNode::childQty() const
 {
     return current.getEmptyCells().size();
 }
