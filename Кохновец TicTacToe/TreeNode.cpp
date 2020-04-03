@@ -30,39 +30,30 @@ const PlayField* TreeNode::value()
 }
 int* TreeNode::getStatistics()
 {
-    auto forWhom = current.nextIsCross ? PlayField::CellState::csCross : PlayField::CellState::csNought;
     int* res = new int[3]{ 0, 0, 0 };
-    getStatistics(forWhom, res);
+    collectStatistics(current.nextIsCross, res);
     return res;
 }
-void TreeNode::getStatistics(PlayField::CellState forWhom, int* res)
+void TreeNode::collectStatistics(bool forCrosses, int* res)
 {
-    bool forCrosses = (forWhom == PlayField::CellState::csCross);
-
     if (isTerminal())
     {
         auto status = current.checkFieldStatus();
         switch (status)
         {
         case PlayField::FieldState::fsCrossesWin:
-        {
             if (forCrosses)
                 res[0]++;
             else res[2]++;
             break;
-        }
         case PlayField::FieldState::fsNoughtsWin:
-        {
             if (forCrosses)
                 res[2]++;
             else res[0]++;
             break;
-        }
         case PlayField::FieldState::fsDraw:
-        {
             res[1]++;
             break;
-        }
         default:
             assert(0);
             break;
@@ -73,7 +64,7 @@ void TreeNode::getStatistics(PlayField::CellState forWhom, int* res)
     fillChildren();
 
     for (TreeNode tn : children)
-        tn.getStatistics(forWhom, res);
+        tn.collectStatistics(forCrosses, res);
 }
 void TreeNode::fillChildren()
 {

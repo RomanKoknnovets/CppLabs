@@ -18,9 +18,9 @@ struct TreeNode
     void fillChildren();
     int* getStatistics();
 private:
-    void getStatistics(PlayField::CellState forWhom, int* res);
+    void collectStatistics(bool forCrosses, int* res);
     int childQty() const;
 };
 
-#endif // !TREENODE_H
+#endif
 

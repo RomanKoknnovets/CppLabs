@@ -11,7 +11,6 @@ int main()
 {
     cout << "Hello World!" << endl;
 
-    
     //в данном случае создастся пустое поле и посчитается статистика для игрока, чья очередь ходить (т.к. крестики первые, то для игрока за крестиков)
     auto res = TreeNode().getStatistics();
     cout << res[0] << " " << res[1] << " " << res[2] << endl; //первое - победы, второе - ничьи, третье - проигрыши
@@ -21,7 +20,6 @@ int main()
     PlayField pf1 = PlayField().makeMove(PlayField::CellIdx(1, 1));
     auto res1 = TreeNode(pf1).getStatistics();
     cout << res1[0] << " " << res1[1] << " " << res1[2] << endl;
-
 
     //ситуация   - о х
     //           x x o
