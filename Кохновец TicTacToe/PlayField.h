@@ -37,6 +37,8 @@ public:
 
     const PlayField makeMove(CellIdx index) const;
 
+    void Print() const;
+
 private:
     PlayField operator+(CellIdx right) const;
 };

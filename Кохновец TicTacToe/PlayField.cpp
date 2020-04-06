@@ -116,3 +116,23 @@ PlayField PlayField::operator+(CellIdx right) const
     PlayField res(*this, right);
     return res;
 }
+void PlayField::Print() const
+{
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+            switch (cells[i * 3 + j])
+            {
+            case CellState::csCross:
+                cout << " x";
+                break;
+            case CellState::csNought:
+                cout << " o";
+                break;
+            case CellState::csEmpty:
+                cout << " -";
+                break;
+            }
+        cout << endl;
+    }
+}

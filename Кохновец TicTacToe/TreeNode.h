@@ -2,6 +2,17 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
+struct StatisticsResult
+{
+    bool forCrosses;
+    int wins = 0;
+    int draws = 0;
+    int losts = 0;
+    StatisticsResult(bool forCrosses) : forCrosses(forCrosses) {}
+    StatisticsResult& operator+=(const StatisticsResult& ir);
+    void Print();
+};
+
 struct TreeNode
 {
     TreeNode() : current(PlayField()), parent(nullptr) {}
@@ -16,11 +27,13 @@ struct TreeNode
     int childCount() const;
     const PlayField* value();
     void fillChildren();
-    int* getStatistics();
+    StatisticsResult& getStatistics();
 private:
-    void collectStatistics(bool forCrosses, int* res);
+    void collectStatistics(StatisticsResult& res);
     int childQty() const;
 };
+
+
 
 #endif
 

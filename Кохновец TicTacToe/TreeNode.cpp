@@ -28,13 +28,28 @@ const PlayField* TreeNode::value()
 {
     return &current;
 }
-int* TreeNode::getStatistics()
+StatisticsResult& TreeNode::getStatistics()
 {
-    int* res = new int[3]{ 0, 0, 0 };
-    collectStatistics(current.nextIsCross, res);
+    cout << "For:" << endl;
+    current.Print();
+    StatisticsResult r(current.nextIsCross);
+    StatisticsResult& res = r;
+    fillChildren();
+    for (TreeNode tn : children)
+    {
+        StatisticsResult r(current.nextIsCross);
+        StatisticsResult& tnres = r;
+        tn.collectStatistics(tnres);
+        cout << "Choice:" << endl;
+        tn.current.Print();
+        tnres.Print();
+        res += tnres;
+    }
+    cout << "Total: ";
+    res.Print();
     return res;
 }
-void TreeNode::collectStatistics(bool forCrosses, int* res)
+void TreeNode::collectStatistics(StatisticsResult& res)
 {
     if (isTerminal())
     {
@@ -42,17 +57,17 @@ void TreeNode::collectStatistics(bool forCrosses, int* res)
         switch (status)
         {
         case PlayField::FieldState::fsCrossesWin:
-            if (forCrosses)
-                res[0]++;
-            else res[2]++;
+            if (res.forCrosses)
+                res.wins++;
+            else res.losts++;
             break;
         case PlayField::FieldState::fsNoughtsWin:
-            if (forCrosses)
-                res[2]++;
-            else res[0]++;
+            if (res.forCrosses)
+                res.losts++;
+            else res.wins++;
             break;
         case PlayField::FieldState::fsDraw:
-            res[1]++;
+            res.draws++;
             break;
         default:
             assert(0);
@@ -64,7 +79,7 @@ void TreeNode::collectStatistics(bool forCrosses, int* res)
     fillChildren();
 
     for (TreeNode tn : children)
-        tn.collectStatistics(forCrosses, res);
+        tn.collectStatistics(res);
 }
 void TreeNode::fillChildren()
 {
@@ -76,4 +91,16 @@ void TreeNode::fillChildren()
 int TreeNode::childQty() const
 {
     return current.getEmptyCells().size();
+}
+
+StatisticsResult& StatisticsResult::operator+=(const StatisticsResult& ir)
+{
+    wins += ir.wins;
+    draws += ir.draws;
+    losts += ir.losts;
+    return *this;
+}
+void StatisticsResult::Print()
+{
+    cout << " Wins: " << wins << "; Draws: " << draws << "; Losts: " << losts << endl;
 }
