@@ -2,6 +2,9 @@
 #ifndef PLAYFIELD_H
 #define PLAYFIELD_H
 
+#define fieldSize 3 //field 3x3 => size = 3
+#define MaxIndex (fieldSize-1)
+
 struct PlayField
 {
 public:
@@ -21,7 +24,7 @@ public:
     //добавил ещё fsNotEnd для случая когда ещё никто не победил и всё в рамках правил, но остались пустые клетки и ещё можно сделать ход
     enum class FieldState { fsNotEnd, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
     bool nextIsCross = true;
-    vector<CellState> cells = vector<CellState>(9, CellState::csEmpty);
+    vector<CellState> cells = vector<CellState>(fieldSize*fieldSize, CellState::csEmpty);
 
     CellState operator[](CellIdx index) const;
 
@@ -29,7 +32,7 @@ public:
 
     PlayField(PlayField pf, CellIdx index);
 
-    PlayField() : cells(vector<CellState>(9, CellState::csEmpty)), nextIsCross(true) {}
+    PlayField() : nextIsCross(true) {}
 
     FieldState checkFieldStatus() const;
 

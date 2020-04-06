@@ -4,14 +4,15 @@
 using namespace std;
 #include "PlayField.h"
 
+
 void PlayField::CellIdx::setX(int X)
 {
-    assert(X < 3 && X >= 0);
+    assert(X <= MaxIndex && X >= 0);
     x = X;
 }
 void PlayField::CellIdx::setY(int Y)
 {
-    assert(Y < 3 && Y >= 0);
+    assert(Y <= MaxIndex && Y >= 0);
     y = Y;
 }
 PlayField::CellIdx::CellIdx(int y, int x)
@@ -22,12 +23,12 @@ PlayField::CellIdx::CellIdx(int y, int x)
 
 PlayField::CellState PlayField::operator[](CellIdx index) const
 {
-    return cells[index.getY() * 3 + index.getX()];
+    return cells[index.getY() * fieldSize + index.getX()];
 }
 vector<PlayField::CellState> PlayField::operator[](int y) const
 {
     assert(y < 3 && y >= 0);
-    auto res = vector<CellState>{ cells[y * 3], cells[y * 3 + 1], cells[y * 3 + 2] };
+    auto res = vector<CellState>{ cells[y * fieldSize], cells[y * fieldSize + 1], cells[y * fieldSize + MaxIndex] };
     return res;
 }
 PlayField::PlayField(PlayField pf, CellIdx index)
@@ -35,7 +36,7 @@ PlayField::PlayField(PlayField pf, CellIdx index)
     cells = pf.cells;
 
     assert(pf[index] == CellState::csEmpty);
-    cells[index.getY() * 3 + index.getX()] = pf.nextIsCross ? CellState::csCross : CellState::csNought;
+    cells[index.getY() * fieldSize + index.getX()] = pf.nextIsCross ? CellState::csCross : CellState::csNought;
 
     this->nextIsCross = (!pf.nextIsCross);
 }
@@ -45,50 +46,67 @@ PlayField::FieldState PlayField::checkFieldStatus() const
     int tripleNoughtsCount = 0;
     bool isEmptyCellsExists = false;
 
-    for (int i = 0; i < 3; i++)
+    bool firstDiagonal = true;
+    bool secondDiagonal = true;
+    for (int i = 0; i < fieldSize; i++)
     {
-        //можно было бы обращатьс€ реализованным  индексатором, но это ухудшает производительность
-        //(закомментированные строки - с использованием реализованных индексаторов)
-        //если их раскомментировать, то программа будет работать примерно в 4 раза медленнее
-        //со вторым индексатором operator[](CellIdx) не пробовал, но скорее всего тоже будет ощутимо медленнее, так как придетс€ везде создавать экземпл€ры CellIdx
-        if (cells[i * 3] == cells[i * 3 + 1] && cells[i * 3 + 1] == cells[i * 3 + 2])
-            //if((*this)[i][0] == (*this)[i][1] && (*this)[i][1] == (*this)[i][2])
+        if (i > 0)
         {
-            auto d = cells[i * 3];//(*this)[i][0];
-            if (d == CellState::csCross) tripleCrossesCount += 1;
-            if (d == CellState::csNought) tripleNoughtsCount += 1;
+            if (firstDiagonal && cells[(fieldSize + 1) * i] == cells[(fieldSize + 1) * (i - 1)])
+            {
+                if (i == MaxIndex)
+                {
+                    auto d = cells[(fieldSize + 1) * i];
+                    if (d == CellState::csCross) tripleCrossesCount++;
+                    if (d == CellState::csNought) tripleNoughtsCount++;
+                }
+            }
+            else firstDiagonal = false;
+            if (secondDiagonal && cells[(fieldSize - 1)*(i + 1)] == cells[(fieldSize - 1)*i])
+            {
+                if (i == MaxIndex)
+                {
+                    auto d = cells[(fieldSize - 1) * (i + 1)];
+                    if (d == CellState::csCross) tripleCrossesCount++;
+                    if (d == CellState::csNought) tripleNoughtsCount++;
+                }
+            }
+            else secondDiagonal = false;
         }
-        if (cells[i] == cells[3 + i] && cells[3 + i] == cells[6 + i])
-            //if ((*this)[0][i] == (*this)[1][i] && (*this)[1][i] == (*this)[2][i])
+        bool horizontal = true;
+        bool vertical = true;
+        for (int j = 1; j < fieldSize; j++)
         {
-            auto d = cells[i];//(*this)[0][i];
-            if (d == CellState::csCross) tripleCrossesCount += 1;
-            if (d == CellState::csNought) tripleNoughtsCount += 1;
+            if (horizontal && cells[i * fieldSize + j] == cells[i * fieldSize + j - 1])
+            {
+                if (j == MaxIndex)
+                {
+                    auto d = cells[i * fieldSize + j];
+                    if (d == CellState::csCross) tripleCrossesCount++;
+                    if (d == CellState::csNought) tripleNoughtsCount++;
+                }
+            }
+            else horizontal = false;
+            if (vertical && cells[j * fieldSize + i] == cells[(j-1) * fieldSize + i])
+            {
+                if (j == MaxIndex)
+                {
+                    auto d = cells[j * fieldSize + i];
+                    if (d == CellState::csCross) tripleCrossesCount++;
+                    if (d == CellState::csNought) tripleNoughtsCount++;
+                }
+            }
+            else vertical = false;
         }
     }
-    if (cells[0] == cells[4] && cells[4] == cells[8])
-        //if((*this)[0][0] == (*this)[1][1] && (*this)[1][1] == (*this)[2][2])
-    {
-        auto d = cells[0];//(*this)[0][0];
-        if (d == CellState::csCross) tripleCrossesCount += 1;
-        if (d == CellState::csNought) tripleNoughtsCount += 1;
-    }
-    if (cells[2] == cells[4] && cells[4] == cells[6])
-        //if ((*this)[0][2] == (*this)[1][1] && (*this)[1][1] == (*this)[2][0])
-    {
-        auto d = cells[2];//(*this)[0][2];
-        if (d == CellState::csCross) tripleCrossesCount += 1;
-        if (d == CellState::csNought) tripleNoughtsCount += 1;
-    }
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < fieldSize*fieldSize; i++)
         if (cells[i] == CellState::csEmpty)
         {
             isEmptyCellsExists = true;
             break;
         }
-    //при честной игре линий из 3х крестиков или 3х ноликов может быть от 0 до 2, если есть больше, то что-то не так.
-    if ((tripleCrossesCount > 0 && tripleCrossesCount < 3) && tripleNoughtsCount == 0) return FieldState::fsCrossesWin;
-    if (tripleCrossesCount == 0 && (tripleNoughtsCount > 0 && tripleNoughtsCount < 3)) return FieldState::fsNoughtsWin;
+    if ((tripleCrossesCount > 0 && tripleCrossesCount < fieldSize) && tripleNoughtsCount == 0) return FieldState::fsCrossesWin;
+    if (tripleCrossesCount == 0 && (tripleNoughtsCount > 0 && tripleNoughtsCount < fieldSize)) return FieldState::fsNoughtsWin;
     if (tripleCrossesCount == 0 && tripleNoughtsCount == 0)
     {
         if (isEmptyCellsExists)
@@ -100,9 +118,9 @@ PlayField::FieldState PlayField::checkFieldStatus() const
 vector<PlayField::CellIdx> PlayField::getEmptyCells() const
 {
     vector<CellIdx> res = vector<CellIdx>();
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < fieldSize*fieldSize; i++)
     {
-        if (cells[i] == CellState::csEmpty) res.push_back(CellIdx(i / 3, i % 3));
+        if (cells[i] == CellState::csEmpty) res.push_back(CellIdx(i / fieldSize, i % fieldSize));
     }
     return res;
 }
@@ -118,10 +136,10 @@ PlayField PlayField::operator+(CellIdx right) const
 }
 void PlayField::Print() const
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < fieldSize; i++)
     {
-        for (int j = 0; j < 3; j++)
-            switch (cells[i * 3 + j])
+        for (int j = 0; j < fieldSize; j++)
+            switch (cells[i * fieldSize + j])
             {
             case CellState::csCross:
                 cout << " x";
