@@ -33,7 +33,5 @@ private:
     int childQty() const;
 };
 
-
-
 #endif
 

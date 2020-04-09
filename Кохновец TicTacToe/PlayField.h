@@ -34,6 +34,10 @@ public:
 
     PlayField() : nextIsCross(true) {}
 
+    PlayField(vector<CellIdx> Crosses, vector<CellIdx> Noughts);
+
+    PlayField(string field);
+
     FieldState checkFieldStatus() const;
 
     vector<CellIdx> getEmptyCells() const;
@@ -41,7 +45,6 @@ public:
     const PlayField makeMove(CellIdx index) const;
 
     void Print() const;
-
 private:
     PlayField operator+(CellIdx right) const;
 };

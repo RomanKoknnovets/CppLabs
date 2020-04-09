@@ -1,6 +1,7 @@
 #include<iostream>
 #include<cassert>
 #include<vector>
+#include <string>
 using namespace std;
 #include "PlayField.h"
 
@@ -39,6 +40,44 @@ PlayField::PlayField(PlayField pf, CellIdx index)
     cells[index.getY() * fieldSize + index.getX()] = pf.nextIsCross ? CellState::csCross : CellState::csNought;
 
     this->nextIsCross = (!pf.nextIsCross);
+}
+PlayField::PlayField(vector<CellIdx> Crosses, vector<CellIdx> Noughts)
+{
+    int sizeDifference = Crosses.size() - Noughts.size();
+    assert(sizeDifference <= 1 && sizeDifference >= -1);
+    nextIsCross = sizeDifference <= 0;
+    for (int i = 0; i < Crosses.size(); i++)
+        cells[Crosses[i].getX() * fieldSize + Crosses[i].getY()] = CellState::csCross;
+    for (int i = 0; i < Noughts.size(); i++)
+        cells[Noughts[i].getX() * fieldSize + Noughts[i].getY()] = CellState::csNought;
+}
+PlayField::PlayField(string field)
+{
+    int index = 0;
+    int crossesCount = 0;
+    int noughtsCount = 0;
+    for (char c : field)
+    {
+        switch (c)
+        {
+        case 'x':
+            cells[index] = CellState::csCross;
+            crossesCount++;
+            index++;
+            break;
+        case 'o':
+            cells[index] = CellState::csNought;
+            noughtsCount++;
+            index++;
+            break;
+        case '-':
+            index++;
+            break;
+        }
+    }
+    int countDifference = crossesCount - noughtsCount;
+    assert(countDifference <= 1 && countDifference >= -1);
+    nextIsCross = countDifference <= 0;
 }
 PlayField::FieldState PlayField::checkFieldStatus() const
 {
