@@ -16,7 +16,7 @@ int Search(int* arr, int begin, int end, int value)
         if (arr[i] == value) return i;
     return -1;
 }
-//recursive
+//рекурсивный
 void QuickSort1(int* arr, int begin, int end)
 {
     int i = begin;
@@ -27,7 +27,7 @@ void QuickSort1(int* arr, int begin, int end)
     {
         while (arr[i] < mid) i++;
         while (arr[j] > mid) j--;
-        if (i <= j) 
+        if (i <= j)
         {
             int tmp = arr[i];
             arr[i] = arr[j];
@@ -38,10 +38,10 @@ void QuickSort1(int* arr, int begin, int end)
     }
     if (j > begin)
         QuickSort1(arr, begin, j);
-    if (i < end) 
+    if (i < end)
         QuickSort1(arr, i, end);
 }
-
+//не рекурсивный
 void QuickSort2(int* arr, int begin, int end)
 {
     struct Interval
@@ -50,7 +50,7 @@ void QuickSort2(int* arr, int begin, int end)
         Interval(int begin, int end) : begin(begin), end(end) {}
     };
     vector<Interval*> intervals(1, new Interval(begin, end));
-    
+
     while (intervals.size())
     {
         vector<Interval*> newIntervals;
@@ -81,7 +81,7 @@ void QuickSort2(int* arr, int begin, int end)
         intervals = newIntervals;
     }
 }
-//recursive
+//рекурсивный
 int BSearch1(int value, int* arr, int left, int right)
 {
     int count = right - left + 1;
@@ -90,10 +90,10 @@ int BSearch1(int value, int* arr, int left, int right)
     if (mid == value) return left + count / 2;
     if (value < mid && count != 1)
         return BSearch1(value, arr, left, left + count / 2 - 1);
-    if (value > mid && count > 2)
+    if (value > mid&& count > 2)
         return BSearch1(value, arr, left + count / 2 + 1, right);
 }
-
+//не рекурсивный
 int BSearch2(int value, int* arr, int left, int right)
 {
     while (true)
@@ -104,7 +104,7 @@ int BSearch2(int value, int* arr, int left, int right)
         if (mid == value) return left + count / 2;
         if (value < mid && count != 1)
             right = left + count / 2 - 1;
-        if (value > mid && count > 2)
+        if (value > mid&& count > 2)
             left = left + count / 2 + 1;
     }
 }
@@ -123,16 +123,18 @@ int main()
     for (int i = 0; i < 50; i++)
         cout << arr[i] << " ";
     cout << endl;
-    for (int i = 1; i < 100; i++)
-    {
-        assert(arr[i] >= arr[i - 1]);
-        assert(arr[BSearch1(arr[i], arr, 0, 99)] == arr[i]);
-    }
+    int value;
+    cout << "Введите значение для бинарного поиска: "; cin >> value;
+    int res = BSearch1(value, arr, 0, 99);
+    if (res == -1)
+        cout << "Значение не найдено" << endl;
+    else
+        cout << "Полученный индекс: " << res << endl << "Значение по полученному индексу: " << arr[res] << endl;
     delete[] arr;
-
+    cout << endl;
     cout << "Сравнение скорости поиска: " << endl;
-    cout << "Создается массив, замеряется общее время поиска в нём каждого из элементов методом Search" << endl;
-    cout << "Массив фильтруется, замеряется общее время поиска в нём каждого элемента методом BSearch" << endl;
+    cout << "Создается массив, замеряется общее время поиска в нём элементов методом Search" << endl;
+    cout << "Массив сортируется, замеряется общее время поиска в нём элементов методом BSearch" << endl;
     while (true)
     {
         cout << "Новое сравнение" << endl;
@@ -141,7 +143,7 @@ int main()
         int triesCount;
         cout << "Введите количество элементов в массиве: "; cin >> count;
         cout << "Диапазон значений: от 0 до "; cin >> max;
-        cout << "Сколько раз будет проводиться поиск одого элемента: "; cin >> triesCount;
+        cout << "Сколько раз будет проводиться поиск одного элемента: "; cin >> triesCount;
         arr = new int[count];
         fillRandomElements(arr, 0, count - 1, 0, max);
 
