@@ -33,7 +33,7 @@ int main()
     for (int i = 0; i < 50; i++)
         cout << arr[i] << " ";
     cout << endl;
-    int value;
+    long value;
     cout << "Введите значение для бинарного поиска: "; cin >> value;
     int res = BSearch1(value, arr, 0, 99);
     if (res == -1)
@@ -63,7 +63,7 @@ int main()
                 auto res1 = Search(arr, 0, count - 1, arr[i]);
         auto c12 = clock();
         auto d1 = c12 - c11;
-        cout << "На поиск в неотнортированном массиве обычным поиском ушло тиков: " << d1 << endl;
+        cout << "На поиск в неотсортированном массиве обычным поиском ушло тиков: " << d1 << endl;
 
         cout << "Время на сортировку: ";
         auto c31 = clock();
@@ -76,7 +76,7 @@ int main()
         auto c21 = clock();
         for (int i = 0; i < count; i++)
             for (int j = 0; j < triesCount; j++)
-                auto res1 = BSearch1(arr[i], arr, 0, count - 1);
+                auto res1 = BSearch2(arr[i], arr, 0, count - 1);
         auto c22 = clock();
         auto d2 = c22 - c21;
         cout << "На бинарный поиск в отсортированном массиве ушло тиков: " << d2 << endl << endl;
