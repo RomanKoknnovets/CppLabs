@@ -2,6 +2,8 @@
 #include <cassert>
 #include <vector>
 #include <ctime>
+#include "QuickSort.h"
+#include "BSearch.h"
 using namespace std;
 
 void fillRandomElements(int* arr, int begin, int end, int min, int max)
@@ -15,98 +17,6 @@ int Search(int* arr, int begin, int end, int value)
     for (int i = begin; i <= end; i++)
         if (arr[i] == value) return i;
     return -1;
-}
-//рекурсивный
-void QuickSort1(int* arr, int begin, int end)
-{
-    int i = begin;
-    int j = end;
-    int size = end - begin + 1;
-    int mid = arr[begin + size / 2];
-    while (i <= j)
-    {
-        while (arr[i] < mid) i++;
-        while (arr[j] > mid) j--;
-        if (i <= j)
-        {
-            int tmp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = tmp;
-            i++;
-            j--;
-        }
-    }
-    if (j > begin)
-        QuickSort1(arr, begin, j);
-    if (i < end)
-        QuickSort1(arr, i, end);
-}
-//не рекурсивный
-void QuickSort2(int* arr, int begin, int end)
-{
-    struct Interval
-    {
-        int begin, end;
-        Interval(int begin, int end) : begin(begin), end(end) {}
-    };
-    vector<Interval*> intervals(1, new Interval(begin, end));
-
-    while (intervals.size())
-    {
-        vector<Interval*> newIntervals;
-        for (Interval* interval : intervals)
-        {
-            int i = interval->begin;
-            int j = interval->end;
-            int size = j - i + 1;
-            int mid = arr[i + size / 2];
-            while (i <= j)
-            {
-                while (arr[i] < mid) i++;
-                while (arr[j] > mid) j--;
-                if (i <= j)
-                {
-                    int tmp = arr[i];
-                    arr[i] = arr[j];
-                    arr[j] = tmp;
-                    i++;
-                    j--;
-                }
-            }
-            if (j > interval->begin)
-                newIntervals.push_back(new Interval(interval->begin, j));
-            if (i < interval->end)
-                newIntervals.push_back(new Interval(i, interval->end));
-        }
-        intervals = newIntervals;
-    }
-}
-//рекурсивный
-int BSearch1(int value, int* arr, int left, int right)
-{
-    int count = right - left + 1;
-    int mid = arr[left + count / 2];
-    if (count == 1 && mid != value) return -1;
-    if (mid == value) return left + count / 2;
-    if (value < mid && count != 1)
-        return BSearch1(value, arr, left, left + count / 2 - 1);
-    if (value > mid&& count > 2)
-        return BSearch1(value, arr, left + count / 2 + 1, right);
-}
-//не рекурсивный
-int BSearch2(int value, int* arr, int left, int right)
-{
-    while (true)
-    {
-        int count = right - left + 1;
-        int mid = arr[left + count / 2];
-        if (count == 1 && mid != value) return -1;
-        if (mid == value) return left + count / 2;
-        if (value < mid && count != 1)
-            right = left + count / 2 - 1;
-        if (value > mid&& count > 2)
-            left = left + count / 2 + 1;
-    }
 }
 
 int main()
