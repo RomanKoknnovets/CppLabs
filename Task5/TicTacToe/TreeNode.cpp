@@ -81,6 +81,35 @@ void TreeNode::collectStatistics(StatisticsResult& res)
     for (TreeNode tn : children)
         tn.collectStatistics(res);
 }
+TreeNode* TreeNode::getBestChild()
+{
+    if (childQty() != 0)
+    {
+        fillChildren();
+        TreeNode* res = new TreeNode();
+        StatisticsResult st(current.nextIsCross);
+        st.wins = -1;
+        for (int i = 0; i < children.size(); i++)
+        {
+            TreeNode* node = &children[i];
+            StatisticsResult nodeStatistics(current.nextIsCross);
+            node->collectStatistics(nodeStatistics);
+            auto winState = current.nextIsCross ? PlayField::FieldState::fsCrossesWin : PlayField::FieldState::fsNoughtsWin;
+            if (node->current.checkFieldStatus() == winState)
+            {
+                res = node;
+                break;
+            }
+            if (nodeStatistics.wins > st.wins)
+            {
+                st = nodeStatistics;
+                res = node;
+            }
+        }
+        return res;
+    }
+    return nullptr;
+}
 void TreeNode::fillChildren()
 {
     auto ec = current.getEmptyCells();

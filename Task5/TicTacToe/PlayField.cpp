@@ -5,7 +5,6 @@
 using namespace std;
 #include "PlayField.h"
 
-
 void PlayField::CellIdx::setX(int X)
 {
     assert(X <= MaxIndex && X >= 0);

@@ -21,7 +21,6 @@ public:
         CellIdx(int y, int x);
     };
     enum class CellState { csEmpty, csCross, csNought };
-    //добавил ещё fsNotEnd для случая когда ещё никто не победил и всё в рамках правил, но остались пустые клетки и ещё можно сделать ход
     enum class FieldState { fsNotEnd, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
     bool nextIsCross = true;
     vector<CellState> cells = vector<CellState>(fieldSize*fieldSize, CellState::csEmpty);
