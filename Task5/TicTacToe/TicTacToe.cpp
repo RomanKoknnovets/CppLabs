@@ -10,7 +10,6 @@ using namespace std;
 
 void PlayTicTacToe()
 {
-    cout << "Вы играете за крестики!" << endl;
     TreeNode* tn = new TreeNode();
     while (!(tn->isTerminal()))
     {
@@ -23,7 +22,7 @@ void PlayTicTacToe()
         while (true)
         {
             cin >> y >> x;
-            if (x <= fieldSize && y <= fieldSize)
+            if (x <= tn->current.fieldSize && y <= tn->current.fieldSize)
             {
                 auto cs = tn->current[y - 1][x - 1];
                 if (cs == PlayField::CellState::csEmpty)
@@ -31,7 +30,13 @@ void PlayTicTacToe()
             }
             cout << "Заполненная или несуществующая клетка, введите ещё раз: ";
         }
-        tn = new TreeNode(tn, PlayField::CellIdx(y - 1, x - 1));
+        //по идее заполняется только один раз при первом запросе, дальше - нет
+        tn->fillChildren();
+        auto oldtn = tn;
+        for (TreeNode* treeNode : tn->children)
+            if (treeNode->current[y - 1][x - 1] != PlayField::CellState::csEmpty) tn = treeNode;
+        assert(oldtn != tn);
+        //tn = new TreeNode(tn, PlayField::CellIdx(y - 1, x - 1));
         if (!tn->isTerminal())
         {
             cout << "Подождите, игра делает свой ход...";

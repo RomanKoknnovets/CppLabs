@@ -7,12 +7,12 @@ using namespace std;
 
 void PlayField::CellIdx::setX(int X)
 {
-    assert(X <= MaxIndex && X >= 0);
+    assert(X < fieldSize && X >= 0);
     x = X;
 }
 void PlayField::CellIdx::setY(int Y)
 {
-    assert(Y <= MaxIndex && Y >= 0);
+    assert(Y < fieldSize && Y >= 0);
     y = Y;
 }
 PlayField::CellIdx::CellIdx(int y, int x)
@@ -27,8 +27,10 @@ PlayField::CellState PlayField::operator[](CellIdx index) const
 }
 vector<PlayField::CellState> PlayField::operator[](int y) const
 {
-    assert(y < 3 && y >= 0);
-    auto res = vector<CellState>{ cells[y * fieldSize], cells[y * fieldSize + 1], cells[y * fieldSize + MaxIndex] };
+    assert(y < fieldSize && y >= 0);
+    vector<CellState> res;
+    for (int i = 0; i < fieldSize; i++)
+        res.push_back(cells[y * fieldSize + i]);
     return res;
 }
 PlayField::PlayField(PlayField pf, CellIdx index)
@@ -46,9 +48,9 @@ PlayField::PlayField(vector<CellIdx> Crosses, vector<CellIdx> Noughts)
     assert(sizeDifference <= 1 && sizeDifference >= -1);
     nextIsCross = sizeDifference <= 0;
     for (int i = 0; i < Crosses.size(); i++)
-        cells[Crosses[i].getX() * fieldSize + Crosses[i].getY()] = CellState::csCross;
+        cells[Crosses[i].getY() * fieldSize + Crosses[i].getX()] = CellState::csCross;
     for (int i = 0; i < Noughts.size(); i++)
-        cells[Noughts[i].getX() * fieldSize + Noughts[i].getY()] = CellState::csNought;
+        cells[Noughts[i].getY() * fieldSize + Noughts[i].getX()] = CellState::csNought;
 }
 PlayField::PlayField(string field)
 {
@@ -57,6 +59,7 @@ PlayField::PlayField(string field)
     int noughtsCount = 0;
     for (char c : field)
     {
+        assert(index < fieldSize * fieldSize);
         switch (c)
         {
         case 'x':
@@ -92,7 +95,7 @@ PlayField::FieldState PlayField::checkFieldStatus() const
         {
             if (firstDiagonal && cells[(fieldSize + 1) * i] == cells[(fieldSize + 1) * (i - 1)])
             {
-                if (i == MaxIndex)
+                if (i == fieldSize - 1)
                 {
                     auto d = cells[(fieldSize + 1) * i];
                     if (d == CellState::csCross) tripleCrossesCount++;
@@ -102,7 +105,7 @@ PlayField::FieldState PlayField::checkFieldStatus() const
             else firstDiagonal = false;
             if (secondDiagonal && cells[(fieldSize - 1)*(i + 1)] == cells[(fieldSize - 1)*i])
             {
-                if (i == MaxIndex)
+                if (i == fieldSize - 1)
                 {
                     auto d = cells[(fieldSize - 1) * (i + 1)];
                     if (d == CellState::csCross) tripleCrossesCount++;
@@ -117,7 +120,7 @@ PlayField::FieldState PlayField::checkFieldStatus() const
         {
             if (horizontal && cells[i * fieldSize + j] == cells[i * fieldSize + j - 1])
             {
-                if (j == MaxIndex)
+                if (j == fieldSize - 1)
                 {
                     auto d = cells[i * fieldSize + j];
                     if (d == CellState::csCross) tripleCrossesCount++;
@@ -127,7 +130,7 @@ PlayField::FieldState PlayField::checkFieldStatus() const
             else horizontal = false;
             if (vertical && cells[j * fieldSize + i] == cells[(j-1) * fieldSize + i])
             {
-                if (j == MaxIndex)
+                if (j == fieldSize - 1)
                 {
                     auto d = cells[j * fieldSize + i];
                     if (d == CellState::csCross) tripleCrossesCount++;
