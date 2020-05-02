@@ -15,12 +15,13 @@ struct StatisticsResult
 
 struct TreeNode
 {
-    TreeNode() : current(PlayField()), parent(nullptr) {}
-    TreeNode(TreeNode* parent, PlayField::CellIdx index) : parent(parent), current((*parent).current.makeMove(index)) {}
-    TreeNode(PlayField pf) : current(pf), parent(nullptr) {}
+    TreeNode() : field(PlayField()), parent(nullptr) {}
+    TreeNode(TreeNode* parent, PlayField::CellIdx index) : parent(parent), field((*parent).field.makeMove(index)) {}
+    TreeNode(PlayField pf) : field(pf), parent(nullptr) {}
     ~TreeNode() {};
+    StatisticsResult* statistics = nullptr;
     TreeNode* parent;
-    const PlayField current;
+    const PlayField field;
     vector<TreeNode*> children = vector<TreeNode*>();
     bool isTerminal() const;
     void addChild(TreeNode* child);
@@ -28,10 +29,10 @@ struct TreeNode
     int childCount() const;
     const PlayField* value();
     void fillChildren();
-    StatisticsResult& getStatistics();
+    void printStatsForEachChoice();
     TreeNode* getBestChild();
+    StatisticsResult* TreeTraversal();
 private:
-    void collectStatistics(StatisticsResult& res);
     int childQty() const;
 };
 

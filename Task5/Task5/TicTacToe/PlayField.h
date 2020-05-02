@@ -18,10 +18,10 @@ public:
         void setY(int Y);
         CellIdx(int y, int x);
     };
-
+    
     enum class CellState { csEmpty, csCross, csNought };
 
-    enum class FieldState { fsNotEnd, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
+    enum class FieldState { fsNormal, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
 
     bool nextIsCross = true;
 

@@ -151,7 +151,7 @@ PlayField::FieldState PlayField::checkFieldStatus() const
     if (tripleCrossesCount == 0 && tripleNoughtsCount == 0)
     {
         if (isEmptyCellsExists)
-            return FieldState::fsNotEnd;
+            return FieldState::fsNormal;
         return FieldState::fsDraw;
     }
     return FieldState::fsInvalid;

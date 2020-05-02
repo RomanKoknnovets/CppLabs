@@ -150,10 +150,12 @@
     <ClCompile Include="PlayField.cpp" />
     <ClCompile Include="TreeNode.cpp" />
     <ClCompile Include="TicTacToe.cpp" />
+    <ClCompile Include="XOPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PlayField.h" />
     <ClInclude Include="TreeNode.h" />
+    <ClInclude Include="XOPlayer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
