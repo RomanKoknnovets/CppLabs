@@ -2,9 +2,6 @@
 #ifndef PLAYFIELD_H
 #define PLAYFIELD_H
 
-//#define fieldSize 3 //field 3x3 => size = 3
-//#define MaxIndex (fieldSize-1)
-
 struct PlayField
 {
 public:
@@ -51,6 +48,7 @@ public:
     const PlayField makeMove(CellIdx index) const;
 
     void Print() const;
+
 private:
 
     PlayField operator+(CellIdx right) const;

@@ -36,7 +36,6 @@ void PlayTicTacToe()
         for (TreeNode* treeNode : tn->children)
             if (treeNode->current[y - 1][x - 1] != PlayField::CellState::csEmpty) tn = treeNode;
         assert(oldtn != tn);
-        //tn = new TreeNode(tn, PlayField::CellIdx(y - 1, x - 1));
         if (!tn->isTerminal())
         {
             cout << "Подождите, игра делает свой ход...";
@@ -44,6 +43,9 @@ void PlayTicTacToe()
         }
         if (tn->isTerminal())
         {
+            system("cls");
+            cout << "Поле:" << endl;
+            tn->current.Print();
             auto status = tn->current.checkFieldStatus();
             switch (status)
             {
@@ -57,7 +59,6 @@ void PlayTicTacToe()
                 cout << "Ничья!" << endl;
                 break;
             }
-            break;
         }
     }
 }
