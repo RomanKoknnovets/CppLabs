@@ -17,10 +17,11 @@ void TreeNode::addChild(TreeNode* child)
     children.push_back(child);
 }
 
-TreeNode* TreeNode::operator[](int i)
+TreeNode& TreeNode::operator[](int i)
 {
     assert(i < (int)children.size());
-    return children[i];
+    TreeNode& tn = *children[i];
+    return tn;
 }
 
 int TreeNode::childCount() const
@@ -28,27 +29,27 @@ int TreeNode::childCount() const
     return children.size();
 }
 
-const PlayField* TreeNode::value()
+const PlayField& TreeNode::value()
 {
-    return &field;
+    return field;
 }
 
 StatisticsResult* TreeNode::TreeTraversal()
 {
-    statistics = new StatisticsResult(field.nextIsCross);
+    statistics = new StatisticsResult(field.crossIsNext());
     if (isTerminal())
     {
         auto status = field.checkFieldStatus();
         switch (status)
         {
         case PlayField::FieldState::fsCrossesWin:
-            if (field.nextIsCross)
+            if (field.crossIsNext())
                 statistics->wins+=1;
             else
                 statistics->losts+=1;
             break;
         case PlayField::FieldState::fsNoughtsWin:
-            if (field.nextIsCross)
+            if (field.crossIsNext())
                 statistics->losts+=1;
             else
                 statistics->wins+=1;
@@ -60,7 +61,10 @@ StatisticsResult* TreeNode::TreeTraversal()
         return statistics;
     }
 
-    fillChildren();
+    auto ec = field.getEmptyCells();
+    if (childQty() > childCount())
+        for (PlayField::CellIdx index : ec)
+            addChild(new TreeNode(this, index));
 
     for (TreeNode* tn : children)
     {
@@ -70,38 +74,20 @@ StatisticsResult* TreeNode::TreeTraversal()
     return statistics;
 }
 
-void TreeNode::printStatsForEachChoice()
+void TreeNode::printStatsForEachChoice() const
 {
-    cout << "Для поля:" << endl;
+    cout << "For: " << endl;
     field.Print();
-    //StatisticsResult r(field.nextIsCross);
-    //StatisticsResult& res = r;
-    //fillChildren();
     for (TreeNode* tn : children)
     {
-        //StatisticsResult r(field.nextIsCross);
-        //StatisticsResult& tnres = r;
-        //tn->collectStatistics(tnres);
-        cout << "При выборе:" << endl;
+        cout << "On choice: " << endl;
         tn->field.Print();
-        StatisticsResult stat(field.nextIsCross);
+        StatisticsResult stat(field.crossIsNext());
         stat += *tn->statistics;
         stat.Print();
-        //tnres.Print();
-        //res += tnres;
     }
-    cout << "Общее кол-во: ";
+    cout << "Total: ";
     statistics->Print();
-    //res.Print();
-    //return res;
-}
-
-void TreeNode::fillChildren()
-{
-    auto ec = field.getEmptyCells();
-    if (childQty() > childCount())
-        for (PlayField::CellIdx index : ec)
-            addChild(new TreeNode(this, index));
 }
 
 int TreeNode::childQty() const
@@ -127,5 +113,5 @@ StatisticsResult& StatisticsResult::operator+=(const StatisticsResult& ir)
 
 void StatisticsResult::Print()
 {
-    cout << " Побед: " << wins << "; Ничьих: " << draws << "; Поражений: " << losts << endl;
+    cout << " Wins: " << wins << "; Draws: " << draws << "; Losts: " << losts << endl;
 }

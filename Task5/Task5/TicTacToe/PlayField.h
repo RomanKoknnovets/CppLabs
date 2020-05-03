@@ -2,44 +2,32 @@
 #ifndef PLAYFIELD_H
 #define PLAYFIELD_H
 
+constexpr int fieldSize = 3;
+constexpr int index(int y, int x) { return y * fieldSize + x; }
+
 struct PlayField
 {
 public:
     struct CellIdx
     {
-    private:
-        int x;
-        int y;
-        const int fieldSize = 3;
     public:
+        CellIdx(int y, int x);
         int getX() const { return x; }
         int getY() const { return y; }
         void setX(int X);
         void setY(int Y);
-        CellIdx(int y, int x);
+    private:
+        int x;
+        int y;
     };
     
     enum class CellState { csEmpty, csCross, csNought };
 
     enum class FieldState { fsNormal, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
 
-    bool nextIsCross = true;
-
-    const int fieldSize = 3;
-
-    vector<CellState> cells = vector<CellState>(fieldSize*fieldSize, CellState::csEmpty);
-
-    CellState operator[](CellIdx index) const;
-
-    vector<CellState> operator[](int y) const;
-
-    PlayField(PlayField pf, CellIdx index);
-
     PlayField() : nextIsCross(true) {}
 
-    PlayField(vector<CellIdx> Crosses, vector<CellIdx> Noughts);
-
-    PlayField(string field);
+    CellState operator[](CellIdx index) const;
 
     FieldState checkFieldStatus() const;
 
@@ -47,12 +35,17 @@ public:
 
     const PlayField makeMove(CellIdx index) const;
 
+    bool crossIsNext() const { return nextIsCross; }
+
     void Print() const;
 
 private:
+
+    bool nextIsCross = true;
+
+    vector<CellState> cells = vector<CellState>(fieldSize*fieldSize, CellState::csEmpty);
 
     PlayField operator+(CellIdx right) const;
 };
 
 #endif
-
