@@ -11,11 +11,13 @@ XOPlayer::XOPlayer(TreeNode& tree) : node(&tree)
     assert(&tree);
     assert(tree.getStatistics());
 }
+
 void XOPlayer::selectPlayer(PlayField::CellState sideOfBot)
 {
     assert(sideOfBot != PlayField::CellState::csEmpty);
     this->sideOfBot = sideOfBot;
 }
+
 void XOPlayer::makeMove(PlayField::CellIdx iCell)
 {
     assert(node->value()[iCell] == PlayField::CellState::csEmpty && !node->isTerminal());
@@ -29,6 +31,7 @@ void XOPlayer::makeMove(PlayField::CellIdx iCell)
         }
     }
 }
+
 void XOPlayer::makeMove()
 {
     bool s1 = node->value().crossIsNext() && sideOfBot == PlayField::CellState::csCross;
@@ -58,6 +61,7 @@ void XOPlayer::makeMove()
     }
     node = bestMove;
 }
+
 PlayField::FieldState XOPlayer::fieldStatus()
 {
     return node->value().checkFieldStatus();
