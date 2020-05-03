@@ -20,31 +20,19 @@ public:
         int x;
         int y;
     };
-    
+
     enum class CellState { csEmpty, csCross, csNought };
-
     enum class FieldState { fsNormal, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
-
     PlayField() : nextIsCross(true) {}
-
     CellState operator[](CellIdx index) const;
-
     FieldState checkFieldStatus() const;
-
     vector<CellIdx> getEmptyCells() const;
-
     const PlayField makeMove(CellIdx index) const;
-
     bool crossIsNext() const { return nextIsCross; }
-
     void Print() const;
-
 private:
-
     bool nextIsCross = true;
-
     vector<CellState> cells = vector<CellState>(fieldSize*fieldSize, CellState::csEmpty);
-
     PlayField operator+(CellIdx right) const;
 };
 
