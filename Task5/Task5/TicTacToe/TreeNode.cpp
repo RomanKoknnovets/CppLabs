@@ -11,17 +11,16 @@ bool TreeNode::isTerminal() const
     return status != PlayField::FieldState::fsNormal;
 }
 
-void TreeNode::addChild(TreeNode* child)
+void TreeNode::addChild(PlayField::CellIdx index)
 {
     assert((int)children.size() < childQty());
-    children.push_back(child);
+    children.push_back(new TreeNode(this, index));
 }
 
-TreeNode& TreeNode::operator[](int i)
+TreeNode& TreeNode::operator[](int i) const
 {
     assert(i < (int)children.size());
-    TreeNode& tn = *children[i];
-    return tn;
+    return *children[i];
 }
 
 int TreeNode::childCount() const
@@ -29,33 +28,30 @@ int TreeNode::childCount() const
     return children.size();
 }
 
-const PlayField& TreeNode::value()
+const PlayField& TreeNode::value() const
 {
     return field;
 }
 
-StatisticsResult* TreeNode::TreeTraversal()
+const StatisticsResult* TreeNode::TreeTraversal()
 {
-    statistics = new StatisticsResult(field.crossIsNext());
+    statistics = new StatisticsResult();
     if (isTerminal())
     {
         auto status = field.checkFieldStatus();
         switch (status)
         {
         case PlayField::FieldState::fsCrossesWin:
-            if (field.crossIsNext())
-                statistics->wins+=1;
-            else
-                statistics->losts+=1;
+            statistics->crossesWin++;
             break;
         case PlayField::FieldState::fsNoughtsWin:
-            if (field.crossIsNext())
-                statistics->losts+=1;
-            else
-                statistics->wins+=1;
+            statistics->noughtsWin++;
             break;
         case PlayField::FieldState::fsDraw:
-            statistics->draws+=1;
+            statistics->draws++;
+            break;
+        case PlayField::FieldState::fsInvalid:
+            assert(0);
             break;
         }
         return statistics;
@@ -64,7 +60,7 @@ StatisticsResult* TreeNode::TreeTraversal()
     auto ec = field.getEmptyCells();
     if (childQty() > childCount())
         for (PlayField::CellIdx index : ec)
-            addChild(new TreeNode(this, index));
+            addChild(index);
 
     for (TreeNode* tn : children)
     {
@@ -82,9 +78,7 @@ void TreeNode::printStatsForEachChoice() const
     {
         cout << "On choice: " << endl;
         tn->field.Print();
-        StatisticsResult stat(field.crossIsNext());
-        stat += *tn->statistics;
-        stat.Print();
+        tn->statistics->Print();
     }
     cout << "Total: ";
     statistics->Print();
@@ -92,26 +86,19 @@ void TreeNode::printStatsForEachChoice() const
 
 int TreeNode::childQty() const
 {
-    return field.getEmptyCells().size();
+    if (parent) return parent->childQty() - 1;
+    return field.size() * field.size();
 }
 
 StatisticsResult& StatisticsResult::operator+=(const StatisticsResult& ir)
 {
-    if (forCrosses == ir.forCrosses)
-    {
-        wins += ir.wins;
-        losts += ir.losts;
-    }
-    else
-    {
-        wins += ir.losts;
-        losts += ir.wins;
-    }
+    noughtsWin += ir.noughtsWin;
+    crossesWin += ir.crossesWin;
     draws += ir.draws;
     return *this;
 }
 
-void StatisticsResult::Print()
+void StatisticsResult::Print() const
 {
-    cout << " Wins: " << wins << "; Draws: " << draws << "; Losts: " << losts << endl;
+    cout << " Crosses won: " << crossesWin << "; Draws: " << draws << "; Noughts won: " << noughtsWin << endl;
 }

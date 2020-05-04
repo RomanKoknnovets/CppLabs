@@ -25,86 +25,65 @@ PlayField::CellIdx::CellIdx(int y, int x)
 
 PlayField::CellState PlayField::operator[](CellIdx idx) const
 {
-    return cells[index(idx.getY(), idx.getX())];
+    return cells[index(idx)];
 }
 
 PlayField::FieldState PlayField::checkFieldStatus() const
 {
-    int tripleCrossesCount = 0;
-    int tripleNoughtsCount = 0;
+    vector<CellState> triples;
     bool firstDiagonal = true;
     bool secondDiagonal = true;
-    for (int i = 0; i < fieldSize; i++)
+    for (int i = 1; i < fieldSize; i++)
     {
-        if (i > 0)
+        if (firstDiagonal && cells[index(i, i)] == cells[index(i - 1, i - 1)])
         {
-            if (firstDiagonal && cells[(fieldSize + 1) * i] == cells[(fieldSize + 1) * (i - 1)])
-            {
-                if (i == fieldSize - 1)
-                {
-                    auto d = cells[(fieldSize + 1) * i];
-                    if (d == CellState::csCross) tripleCrossesCount++;
-                    if (d == CellState::csNought) tripleNoughtsCount++;
-                }
-            }
-            else firstDiagonal = false;
-            if (secondDiagonal && cells[(fieldSize - 1)*(i + 1)] == cells[(fieldSize - 1)*i])
-            {
-                if (i == fieldSize - 1)
-                {
-                    auto d = cells[(fieldSize - 1) * (i + 1)];
-                    if (d == CellState::csCross) tripleCrossesCount++;
-                    if (d == CellState::csNought) tripleNoughtsCount++;
-                }
-            }
-            else secondDiagonal = false;
+            if (i == fieldSize - 1 && cells[index(i, i)] != CellState::csEmpty)
+                triples.push_back(cells[index(i, i)]);
         }
+        else firstDiagonal = false;
+        if (secondDiagonal && cells[index(i, fieldSize - i - 1)] == cells[index(i - 1, fieldSize - i)])
+        {
+            if (i == fieldSize - 1 && cells[index(i, fieldSize - i - 1)] != CellState::csEmpty)
+                triples.push_back(cells[index(i, fieldSize - i - 1)]);
+        }
+        else secondDiagonal = false;
+    }
+    for(int i = 0; i < fieldSize; i++)
+    {
         bool horizontal = true;
         bool vertical = true;
         for (int j = 1; j < fieldSize; j++)
         {
-            if (horizontal && cells[i * fieldSize + j] == cells[i * fieldSize + j - 1])
+            if (horizontal && cells[index(i, j)] == cells[index(i, j - 1)])
             {
-                if (j == fieldSize - 1)
-                {
-                    auto d = cells[i * fieldSize + j];
-                    if (d == CellState::csCross) tripleCrossesCount++;
-                    if (d == CellState::csNought) tripleNoughtsCount++;
-                }
+                if (j == fieldSize - 1 && cells[index(i, j)] != CellState::csEmpty)
+                    triples.push_back(cells[index(i, j)]);
             }
             else horizontal = false;
-            if (vertical && cells[j * fieldSize + i] == cells[(j-1) * fieldSize + i])
+            if (vertical && cells[index(j, i)] == cells[index(j - 1, i)])
             {
-                if (j == fieldSize - 1)
-                {
-                    auto d = cells[j * fieldSize + i];
-                    if (d == CellState::csCross) tripleCrossesCount++;
-                    if (d == CellState::csNought) tripleNoughtsCount++;
-                }
+                if (j == fieldSize - 1 && cells[index(j, i)] != CellState::csEmpty)
+                    triples.push_back(cells[index(j, i)]);
             }
             else vertical = false;
         }
     }
-    bool isEmptyCellsExists = false;
-    for (int i = 0; i < fieldSize*fieldSize; i++)
-        if (cells[i] == CellState::csEmpty)
-            isEmptyCellsExists = true;
-    if ((tripleCrossesCount > 0 && tripleCrossesCount < fieldSize) && tripleNoughtsCount == 0) return FieldState::fsCrossesWin;
-    if (tripleCrossesCount == 0 && (tripleNoughtsCount > 0 && tripleNoughtsCount < fieldSize)) return FieldState::fsNoughtsWin;
-    if (tripleCrossesCount == 0 && tripleNoughtsCount == 0)
-    {
-        if (isEmptyCellsExists)
-            return FieldState::fsNormal;
-        return FieldState::fsDraw;
-    }
-    return FieldState::fsInvalid;
+    for (int i = 1; i < triples.size(); i++)
+        if (triples[i - 1] != triples[i]) return FieldState::fsInvalid;
+    if (triples.size() > 0 && triples.size() < 3)
+        if (triples[0] == CellState::csCross)
+            return FieldState::fsCrossesWin;
+        else return FieldState::fsNoughtsWin;
+    if (getEmptyCells().size() == 0) return FieldState::fsDraw;
+    return FieldState::fsNormal;
 }
 
 vector<PlayField::CellIdx> PlayField::getEmptyCells() const
 {
     vector<CellIdx> res = vector<CellIdx>();
-    for (int i = 0; i < fieldSize*fieldSize; i++)
-        if (cells[i] == CellState::csEmpty) res.push_back(CellIdx(i / fieldSize, i % fieldSize));
+    for (int i = 0; i < fieldSize; i++)
+        for(int j = 0; j < fieldSize; j++)
+            if (cells[index(i,j)] == CellState::csEmpty) res.push_back(CellIdx(i, j));
     return res;
 }
 
@@ -116,10 +95,9 @@ const PlayField PlayField::makeMove(CellIdx index) const
 PlayField PlayField::operator+(CellIdx right) const
 {
     PlayField pf;
-    pf.nextIsCross = !nextIsCross;
     pf.cells = cells;
     assert(pf[right] == CellState::csEmpty);
-    pf.cells[index(right.getY(), right.getX())] = nextIsCross ? CellState::csCross : CellState::csNought;
+    pf.cells[index(right)] = nextIsCross() ? CellState::csCross : CellState::csNought;
     return pf;
 }
 

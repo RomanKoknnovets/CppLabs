@@ -1,13 +1,10 @@
 #pragma once
-#ifndef PLAYFIELD_H
-#define PLAYFIELD_H
-
-constexpr int fieldSize = 3;
-constexpr int index(int y, int x) { return y * fieldSize + x; }
 
 struct PlayField
 {
 public:
+    enum class CellState { csEmpty, csCross, csNought };
+    enum class FieldState { fsNormal, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
     struct CellIdx
     {
     public:
@@ -21,19 +18,25 @@ public:
         int y;
     };
 
-    enum class CellState { csEmpty, csCross, csNought };
-    enum class FieldState { fsNormal, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
-    PlayField() : nextIsCross(true) {}
+    PlayField() {}
     CellState operator[](CellIdx index) const;
     FieldState checkFieldStatus() const;
     vector<CellIdx> getEmptyCells() const;
     const PlayField makeMove(CellIdx index) const;
-    bool crossIsNext() const { return nextIsCross; }
+    bool nextIsCross() const
+    {
+        //if crosses go first
+        return getEmptyCells().size() % 2 == 1;
+    }
     void Print() const;
-private:
-    bool nextIsCross = true;
-    vector<CellState> cells = vector<CellState>(fieldSize*fieldSize, CellState::csEmpty);
-    PlayField operator+(CellIdx right) const;
-};
+    static int size() { return fieldSize; }
+    bool isTerminal() const { return checkFieldStatus() != FieldState::fsNormal; }
 
-#endif
+private:
+    PlayField operator+(CellIdx right) const;
+    static constexpr int index(int y, int x) { return y * fieldSize + x; }
+    static constexpr int index(CellIdx& idx) { return index(idx.getY(), idx.getX()); }
+
+    vector<CellState> cells = vector<CellState>(fieldSize*fieldSize, CellState::csEmpty);
+    static constexpr int fieldSize = 3;
+};

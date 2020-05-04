@@ -1,6 +1,4 @@
 #pragma once
-#ifndef XOPLAYER_H
-#define XOPLAYER_H
 
 struct XOPlayer
 {
@@ -9,11 +7,10 @@ public:
     void selectPlayer(PlayField::CellState sideOfBot);
     void makeMove(PlayField::CellIdx iCell);
     void makeMove();
-    TreeNode* getCurrentNode() const { return node; }
+    PlayField currentState() const { return currentNode->value(); }
     PlayField::FieldState fieldStatus() const;
 private:
-    TreeNode* node;
-    PlayField::CellState sideOfBot;
+    TreeNode& tree;
+    TreeNode* currentNode;
+    PlayField::CellState sideOfBot = PlayField::CellState::csCross;
 };
-
-#endif // !XOPLAYER_H

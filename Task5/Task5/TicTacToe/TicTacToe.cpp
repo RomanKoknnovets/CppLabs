@@ -16,12 +16,15 @@ int main()
     cout << "Обход дерева...";
     TreeNode tn = TreeNode();
     auto res = tn.TreeTraversal();
+    res->Print();
+    getchar();
+
     XOPlayer game(tn);
 
     system("cls");
     cout << "Поле на момент начала игры: " << endl;
-    game.getCurrentNode()->value().Print();
-    cout << "Первыми ходят " << (game.getCurrentNode()->value().crossIsNext() ? "крестики" : "нолики") << endl;
+    game.currentState().Print();
+    cout << "Первыми ходят " << (game.currentState().nextIsCross() ? "крестики" : "нолики") << endl;
     cout << "Выберите, вы играете за крестики, или за нолики (введите x или o): ";
     bool botMoves = false;
     while (true)
@@ -40,11 +43,11 @@ int main()
         }
         cout << "Не распознан знак. Введите на английской раскладке х или o: ";
     }
-    while (!game.getCurrentNode()->isTerminal())
+    while (!game.currentState().isTerminal())
     {
         system("cls");
         cout << "Поле:" << endl;
-        game.getCurrentNode()->value().Print();
+        game.currentState().Print();
         if (botMoves)
             game.makeMove();
         else
@@ -54,8 +57,8 @@ int main()
             while (true)
             {
                 cin >> y >> x;
-                if (x <= fieldSize && y <= fieldSize)
-                    if (game.getCurrentNode()->value()[PlayField::CellIdx(y - 1, x - 1)] == PlayField::CellState::csEmpty)
+                if (x <= PlayField::size() && y <= PlayField::size())
+                    if (game.currentState()[PlayField::CellIdx(y - 1, x - 1)] == PlayField::CellState::csEmpty)
                         break;
                 cout << "Заполненная или несуществующая клетка, введите ещё раз: ";
             }
@@ -65,8 +68,8 @@ int main()
     }
     system("cls");
     cout << "Итог:" << endl;
-    game.getCurrentNode()->value().Print();
-    auto status = game.getCurrentNode()->value().checkFieldStatus();
+    game.currentState().Print();
+    auto status = game.currentState().checkFieldStatus();
     switch (status)
     {
     case PlayField::FieldState::fsCrossesWin:

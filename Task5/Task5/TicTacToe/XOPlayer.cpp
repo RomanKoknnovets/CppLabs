@@ -6,9 +6,8 @@ using namespace std;
 #include "TreeNode.h"
 #include "XOPlayer.h"
 
-XOPlayer::XOPlayer(TreeNode& tree) : node(&tree)
+XOPlayer::XOPlayer(TreeNode& tree) : tree(tree), currentNode(&tree)
 {
-    assert(&tree);
     assert(tree.getStatistics());
 }
 
@@ -20,13 +19,13 @@ void XOPlayer::selectPlayer(PlayField::CellState sideOfBot)
 
 void XOPlayer::makeMove(PlayField::CellIdx iCell)
 {
-    assert(node->value()[iCell] == PlayField::CellState::csEmpty && !node->isTerminal());
-    for (int i = 0; i < node->childCount(); i++)
+    assert(currentNode->value()[iCell] == PlayField::CellState::csEmpty && !currentNode->isTerminal());
+    for (int i = 0; i < currentNode->childCount(); i++)
     {
-        TreeNode* tn = &(*node)[i];
+        TreeNode* tn = &currentNode->operator[](i);
         if (tn->value()[iCell] != PlayField::CellState::csEmpty)
         {
-            node = tn;
+            currentNode = tn;
             break;
         }
     }
@@ -34,15 +33,15 @@ void XOPlayer::makeMove(PlayField::CellIdx iCell)
 
 void XOPlayer::makeMove()
 {
-    bool s1 = node->value().crossIsNext() && sideOfBot == PlayField::CellState::csCross;
-    bool s2 = !(node->value().crossIsNext()) && sideOfBot == PlayField::CellState::csNought;
-    assert((s1 || s2) && !node->isTerminal());
+    bool s1 = currentState().nextIsCross() && sideOfBot == PlayField::CellState::csCross;
+    bool s2 = !(currentState().nextIsCross()) && sideOfBot == PlayField::CellState::csNought;
+    assert((s1 || s2) && !currentNode->isTerminal());
 
-    TreeNode* bestMove = node;
+    TreeNode* bestMove = nullptr;
     int bestScore = -1;
-    for(int i = 0; i < node->childCount(); i++)
+    for(int i = 0; i < currentNode->childCount(); i++)
     {
-        TreeNode& tn = (*node)[i];
+        TreeNode& tn = currentNode->operator[](i);
         if (tn.isTerminal())
         {
             auto status = tn.value().checkFieldStatus();
@@ -53,16 +52,17 @@ void XOPlayer::makeMove()
                 break;
             }
         }
-        if (tn.getStatistics()->losts + tn.getStatistics()->draws > bestScore)
+        int wins = s1 ? tn.getStatistics()->crossesWin : tn.getStatistics()->noughtsWin;
+        if (wins + tn.getStatistics()->draws > bestScore)
         {
-            bestScore = tn.getStatistics()->draws + tn.getStatistics()->losts;
+            bestScore = tn.getStatistics()->draws + wins;
             bestMove = &tn;
         }
     }
-    node = bestMove;
+    currentNode = bestMove;
 }
 
 PlayField::FieldState XOPlayer::fieldStatus() const
 {
-    return node->value().checkFieldStatus();
+    return currentState().checkFieldStatus();
 }
