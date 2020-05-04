@@ -62,7 +62,7 @@ void XOPlayer::makeMove()
     node = bestMove;
 }
 
-PlayField::FieldState XOPlayer::fieldStatus()
+PlayField::FieldState XOPlayer::fieldStatus() const
 {
     return node->value().checkFieldStatus();
 }

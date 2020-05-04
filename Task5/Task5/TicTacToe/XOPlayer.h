@@ -9,8 +9,8 @@ public:
     void selectPlayer(PlayField::CellState sideOfBot);
     void makeMove(PlayField::CellIdx iCell);
     void makeMove();
-    TreeNode* getCurrentNode() { return node; }
-    PlayField::FieldState fieldStatus();
+    TreeNode* getCurrentNode() const { return node; }
+    PlayField::FieldState fieldStatus() const;
 private:
     TreeNode* node;
     PlayField::CellState sideOfBot;

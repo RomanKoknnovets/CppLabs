@@ -55,11 +55,8 @@ int main()
             {
                 cin >> y >> x;
                 if (x <= fieldSize && y <= fieldSize)
-                {
-                    auto cs = game.getCurrentNode()->value()[PlayField::CellIdx(y - 1, x - 1)];
-                    if (cs == PlayField::CellState::csEmpty)
+                    if (game.getCurrentNode()->value()[PlayField::CellIdx(y - 1, x - 1)] == PlayField::CellState::csEmpty)
                         break;
-                }
                 cout << "Заполненная или несуществующая клетка, введите ещё раз: ";
             }
             game.makeMove(PlayField::CellIdx(y - 1, x - 1));
