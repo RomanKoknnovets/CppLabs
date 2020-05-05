@@ -1,5 +1,7 @@
 #include "PlayField.h"
 
+using namespace std;
+
 void PlayField::CellIdx::setX(int X)
 {
     assert(X < fieldSize && X >= 0);
@@ -64,12 +66,16 @@ PlayField::FieldState PlayField::checkFieldStatus() const
         }
     }
     for (int i = 1; i < triples.size(); i++)
-        if (triples[i - 1] != triples[i]) return FieldState::fsInvalid;
-    if (triples.size() > 0 && triples.size() < 3)
+        if (triples[i - 1] != triples[i]) 
+            return FieldState::fsInvalid;
+    if (!triples.empty())
+    {
         if (triples[0] == CellState::csCross)
             return FieldState::fsCrossesWin;
-        else return FieldState::fsNoughtsWin;
-    if (getEmptyCells().size() == 0) return FieldState::fsDraw;
+        return FieldState::fsNoughtsWin;
+    }
+    if (getEmptyCells().empty())
+        return FieldState::fsDraw;
     return FieldState::fsNormal;
 }
 
@@ -82,6 +88,32 @@ vector<PlayField::CellIdx> PlayField::getEmptyCells() const
     return res;
 }
 
+PlayField::CellState PlayField::nextMove() const
+{
+    if (getEmptyCells().empty())
+        return csEmpty;
+    return nextIsCross() ? csCross : csNought;
+}
+
+bool PlayField::nextIsCross() const
+{
+    int crossesCount = 0;
+    int noughtsCount = 0;
+    for (int i = 0; i < cells.size(); i++)
+        switch (cells[i])
+        {
+        case csCross:
+            crossesCount++;
+            break;
+        case csNought:
+            noughtsCount++;
+            break;
+        }
+    int difference = crossesCount - noughtsCount;
+    assert(difference == 1 || difference == 0);
+    return difference == 0;
+}
+
 const PlayField PlayField::makeMove(CellIdx index) const
 {
     return *this + index;
@@ -92,14 +124,14 @@ PlayField PlayField::operator+(CellIdx right) const
     PlayField pf;
     pf.cells = cells;
     assert(pf[right] == CellState::csEmpty);
-    pf.cells[index(right)] = nextIsCross() ? CellState::csCross : CellState::csNought;
+    pf.cells[index(right)] = nextMove();
     return pf;
 }
 
 bool PlayField::isTerminal() const
 {
     auto status = checkFieldStatus();
-    return status != FieldState::fsNormal && status != FieldState::fsInvalid;
+    return status == fsDraw || status == fsCrossesWin || status == fsNoughtsWin;
 }
 
 void PlayField::Print() const

@@ -1,14 +1,16 @@
 #include "XOPlayer.h"
 
+using namespace std;
+
 XOPlayer::XOPlayer(TreeNode& tree) : tree(tree), currentNode(&tree)
 {
     assert(tree.getStatistics());
 }
 
-void XOPlayer::selectPlayer(PlayField::CellState sideOfBot)
+void XOPlayer::selectPlayer(PlayField::CellState botSide)
 {
     assert(sideOfBot != PlayField::CellState::csEmpty);
-    this->sideOfBot = sideOfBot;
+    sideOfBot = botSide;
 }
 
 void XOPlayer::makeMove(PlayField::CellIdx iCell)
@@ -16,7 +18,7 @@ void XOPlayer::makeMove(PlayField::CellIdx iCell)
     for (int i = 0; i < currentNode->childCount(); i++)
     {
         TreeNode* tn = &currentNode->operator[](i);
-        if (tn->value()[iCell] != PlayField::CellState::csEmpty)
+        if (tn->value()[iCell] == currentState().nextMove())
         {
             currentNode = tn;
             break;
@@ -26,29 +28,19 @@ void XOPlayer::makeMove(PlayField::CellIdx iCell)
 
 void XOPlayer::makeMove()
 {
-    bool botIsForCrosses = currentState().nextIsCross() && sideOfBot == PlayField::CellState::csCross;
-    bool botIsForNoughts = !(currentState().nextIsCross()) && sideOfBot == PlayField::CellState::csNought;
-    assert((botIsForCrosses || botIsForNoughts) && !currentNode->isTerminal());
+    assert(currentState().nextMove() == sideOfBot && !currentState().isTerminal());
 
     TreeNode* bestMove = nullptr;
     int bestScore = -1;
     for(int i = 0; i < currentNode->childCount(); i++)
     {
         auto& tn = (*currentNode)[i];
-        if (tn.isTerminal())
+        int wins = currentState().nextIsCross() ? tn.getStatistics()->crossesWin : tn.getStatistics()->noughtsWin;
+        int total = tn.getStatistics()->crossesWin + tn.getStatistics()->draws + tn.getStatistics()->noughtsWin;
+        int score = (wins + tn.getStatistics()->draws) / total;
+        if (score > bestScore)
         {
-            auto status = tn.value().checkFieldStatus();
-            if (sideOfBot == PlayField::CellState::csCross && status == PlayField::FieldState::fsCrossesWin ||
-                sideOfBot == PlayField::CellState::csNought && status == PlayField::FieldState::fsNoughtsWin)
-            {
-                bestMove = &tn;
-                break;
-            }
-        }
-        int wins = botIsForCrosses ? tn.getStatistics()->crossesWin : tn.getStatistics()->noughtsWin;
-        if (wins + tn.getStatistics()->draws > bestScore)
-        {
-            bestScore = tn.getStatistics()->draws + wins;
+            bestScore = score;
             bestMove = &tn;
         }
     }

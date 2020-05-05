@@ -1,15 +1,15 @@
 #include "TreeNode.h"
 
+using namespace std;
+
 TreeNode::~TreeNode()
 {
-    children.clear();
     delete statistics;
 }
 
 bool TreeNode::isTerminal() const
 {
-    auto status = field.checkFieldStatus();
-    return status != PlayField::FieldState::fsNormal && status != PlayField::FieldState::fsInvalid;
+    return field.isTerminal();
 }
 
 void TreeNode::addChild(PlayField::CellIdx index)
@@ -20,7 +20,6 @@ void TreeNode::addChild(PlayField::CellIdx index)
 
 TreeNode& TreeNode::operator[](int i) const
 {
-    assert(i < (int)children.size());
     return *children[i];
 }
 
@@ -36,6 +35,7 @@ const PlayField& TreeNode::value() const
 
 const StatisticsResult TreeNode::TreeTraversal()
 {
+    delete statistics;
     statistics = new StatisticsResult();
     if (isTerminal())
     {
@@ -87,7 +87,8 @@ void TreeNode::printStatsForEachChoice() const
 
 int TreeNode::childQty() const
 {
-    if (parent) return parent->childQty() - 1;
+    if (parent) 
+        return parent->childQty() - 1;
     return field.size() * field.size();
 }
 

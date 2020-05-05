@@ -1,11 +1,6 @@
-﻿#include <iostream>
-#include <vector>
-#include <cassert>
-#include <stdlib.h>
+﻿#include "XOPlayer.h"
+
 using namespace std;
-#include "PlayField.h"
-#include "TreeNode.h"
-#include "XOPlayer.h"
 
 //Кохновец Роман Николаевич, группа РИ-280003
 //задача - написать программу, которая играет с пользователем в крестики-нолики

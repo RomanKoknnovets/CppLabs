@@ -28,7 +28,7 @@ private:
     TreeNode(TreeNode* parent, PlayField::CellIdx index) : parent(parent), field(parent->field.makeMove(index)) {}
     int childQty() const;
 
-    vector<TreeNode*> children;
+    std::vector<TreeNode*> children;
     StatisticsResult* statistics = nullptr;
     TreeNode* parent = nullptr;
     const PlayField field;
