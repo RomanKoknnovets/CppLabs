@@ -22,7 +22,7 @@ public:
         int y = 0;
     };
 
-    PlayField() {};
+    PlayField() {}
     CellState operator[](CellIdx index) const;
     FieldState checkFieldStatus() const;
     std::vector<CellIdx> getEmptyCells() const;

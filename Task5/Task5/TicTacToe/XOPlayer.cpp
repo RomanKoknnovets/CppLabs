@@ -15,10 +15,11 @@ void XOPlayer::selectPlayer(PlayField::CellState botSide)
 
 void XOPlayer::makeMove(PlayField::CellIdx iCell)
 {
+    auto nextMove = currentState().nextMove();
     for (int i = 0; i < currentNode->childCount(); i++)
     {
         TreeNode* tn = &currentNode->operator[](i);
-        if (tn->value()[iCell] == currentState().nextMove())
+        if (tn->value()[iCell] == nextMove)
         {
             currentNode = tn;
             break;
@@ -31,13 +32,13 @@ void XOPlayer::makeMove()
     assert(currentState().nextMove() == sideOfBot && !currentState().isTerminal());
 
     TreeNode* bestMove = nullptr;
-    int bestScore = -1;
+    double bestScore = -1;
     for(int i = 0; i < currentNode->childCount(); i++)
     {
         auto& tn = (*currentNode)[i];
         int wins = currentState().nextIsCross() ? tn.getStatistics()->crossesWin : tn.getStatistics()->noughtsWin;
         int total = tn.getStatistics()->crossesWin + tn.getStatistics()->draws + tn.getStatistics()->noughtsWin;
-        int score = (wins + tn.getStatistics()->draws) / total;
+        double score = (double)(wins + tn.getStatistics()->draws) / total;
         if (score > bestScore)
         {
             bestScore = score;
