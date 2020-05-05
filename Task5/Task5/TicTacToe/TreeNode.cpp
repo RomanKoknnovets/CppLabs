@@ -1,14 +1,15 @@
-#include <iostream>
-#include <vector>
-#include <cassert>
-using namespace std;
-#include "PlayField.h"
 #include "TreeNode.h"
+
+TreeNode::~TreeNode()
+{
+    children.clear();
+    delete statistics;
+}
 
 bool TreeNode::isTerminal() const
 {
     auto status = field.checkFieldStatus();
-    return status != PlayField::FieldState::fsNormal;
+    return status != PlayField::FieldState::fsNormal && status != PlayField::FieldState::fsInvalid;
 }
 
 void TreeNode::addChild(PlayField::CellIdx index)
@@ -33,7 +34,7 @@ const PlayField& TreeNode::value() const
     return field;
 }
 
-const StatisticsResult* TreeNode::TreeTraversal()
+const StatisticsResult TreeNode::TreeTraversal()
 {
     statistics = new StatisticsResult();
     if (isTerminal())
@@ -54,7 +55,7 @@ const StatisticsResult* TreeNode::TreeTraversal()
             assert(0);
             break;
         }
-        return statistics;
+        return *statistics;
     }
 
     auto ec = field.getEmptyCells();
@@ -65,9 +66,9 @@ const StatisticsResult* TreeNode::TreeTraversal()
     for (TreeNode* tn : children)
     {
         auto tnres = tn->TreeTraversal();
-        *statistics += *tnres;
+        *statistics += tnres;
     }
-    return statistics;
+    return *statistics;
 }
 
 void TreeNode::printStatsForEachChoice() const

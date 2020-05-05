@@ -1,9 +1,3 @@
-#include <iostream>
-#include <cassert>
-#include <vector>
-using namespace std;
-#include "PlayField.h"
-#include "TreeNode.h"
 #include "XOPlayer.h"
 
 XOPlayer::XOPlayer(TreeNode& tree) : tree(tree), currentNode(&tree)
@@ -19,7 +13,6 @@ void XOPlayer::selectPlayer(PlayField::CellState sideOfBot)
 
 void XOPlayer::makeMove(PlayField::CellIdx iCell)
 {
-    assert(currentNode->value()[iCell] == PlayField::CellState::csEmpty && !currentNode->isTerminal());
     for (int i = 0; i < currentNode->childCount(); i++)
     {
         TreeNode* tn = &currentNode->operator[](i);
@@ -33,15 +26,15 @@ void XOPlayer::makeMove(PlayField::CellIdx iCell)
 
 void XOPlayer::makeMove()
 {
-    bool s1 = currentState().nextIsCross() && sideOfBot == PlayField::CellState::csCross;
-    bool s2 = !(currentState().nextIsCross()) && sideOfBot == PlayField::CellState::csNought;
-    assert((s1 || s2) && !currentNode->isTerminal());
+    bool botIsForCrosses = currentState().nextIsCross() && sideOfBot == PlayField::CellState::csCross;
+    bool botIsForNoughts = !(currentState().nextIsCross()) && sideOfBot == PlayField::CellState::csNought;
+    assert((botIsForCrosses || botIsForNoughts) && !currentNode->isTerminal());
 
     TreeNode* bestMove = nullptr;
     int bestScore = -1;
     for(int i = 0; i < currentNode->childCount(); i++)
     {
-        TreeNode& tn = currentNode->operator[](i);
+        auto& tn = (*currentNode)[i];
         if (tn.isTerminal())
         {
             auto status = tn.value().checkFieldStatus();
@@ -52,7 +45,7 @@ void XOPlayer::makeMove()
                 break;
             }
         }
-        int wins = s1 ? tn.getStatistics()->crossesWin : tn.getStatistics()->noughtsWin;
+        int wins = botIsForCrosses ? tn.getStatistics()->crossesWin : tn.getStatistics()->noughtsWin;
         if (wins + tn.getStatistics()->draws > bestScore)
         {
             bestScore = tn.getStatistics()->draws + wins;

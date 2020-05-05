@@ -1,8 +1,3 @@
-#include<iostream>
-#include<cassert>
-#include<vector>
-#include <string>
-using namespace std;
 #include "PlayField.h"
 
 void PlayField::CellIdx::setX(int X)
@@ -99,6 +94,12 @@ PlayField PlayField::operator+(CellIdx right) const
     assert(pf[right] == CellState::csEmpty);
     pf.cells[index(right)] = nextIsCross() ? CellState::csCross : CellState::csNought;
     return pf;
+}
+
+bool PlayField::isTerminal() const
+{
+    auto status = checkFieldStatus();
+    return status != FieldState::fsNormal && status != FieldState::fsInvalid;
 }
 
 void PlayField::Print() const

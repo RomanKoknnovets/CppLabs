@@ -16,7 +16,7 @@ int main()
     cout << "Обход дерева...";
     TreeNode tn = TreeNode();
     auto res = tn.TreeTraversal();
-    res->Print();
+    res.Print();
     getchar();
 
     XOPlayer game(tn);

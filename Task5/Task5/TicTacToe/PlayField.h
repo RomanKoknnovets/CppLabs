@@ -1,10 +1,15 @@
 #pragma once
+#include <iostream>
+#include <cassert>
+#include <vector>
+using namespace std;
 
 struct PlayField
 {
 public:
-    enum class CellState { csEmpty, csCross, csNought };
-    enum class FieldState { fsNormal, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
+    enum CellState { csEmpty, csCross, csNought };
+    enum FieldState { fsNormal, fsInvalid, fsCrossesWin, fsNoughtsWin, fsDraw };
+
     struct CellIdx
     {
     public:
@@ -14,8 +19,8 @@ public:
         void setX(int X);
         void setY(int Y);
     private:
-        int x;
-        int y;
+        int x = 0;
+        int y = 0;
     };
 
     PlayField() {}
@@ -30,7 +35,7 @@ public:
     }
     void Print() const;
     static int size() { return fieldSize; }
-    bool isTerminal() const { return checkFieldStatus() != FieldState::fsNormal; }
+    bool isTerminal() const;
 
 private:
     PlayField operator+(CellIdx right) const;

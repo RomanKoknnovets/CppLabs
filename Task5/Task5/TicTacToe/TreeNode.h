@@ -1,4 +1,5 @@
 #pragma once
+#include "PlayField.h"
 
 struct StatisticsResult
 {
@@ -12,21 +13,16 @@ struct StatisticsResult
 
 struct TreeNode
 {
-    TreeNode() : field(PlayField()), parent(nullptr) {}
+    TreeNode() : field(PlayField()) {}
 public:
-    ~TreeNode()
-    {
-        children.clear();
-        delete statistics;
-        //should I delete parent? 
-    }
+    ~TreeNode();
     bool isTerminal() const;
     void addChild(PlayField::CellIdx index);
     TreeNode& operator[](int i) const;
     int childCount() const;
     const PlayField& value() const;
     void printStatsForEachChoice() const;
-    const StatisticsResult* TreeTraversal();
+    const StatisticsResult TreeTraversal();
     const StatisticsResult* getStatistics() const { return statistics; }
 private:
     TreeNode(TreeNode* parent, PlayField::CellIdx index) : parent(parent), field(parent->field.makeMove(index)) {}
@@ -34,6 +30,6 @@ private:
 
     vector<TreeNode*> children;
     StatisticsResult* statistics = nullptr;
-    TreeNode* parent;
+    TreeNode* parent = nullptr;
     const PlayField field;
 };
