@@ -4,6 +4,8 @@ using namespace std;
 
 TreeNode::~TreeNode()
 {
+    for (TreeNode* tn : children)
+        delete tn;
     delete statistics;
 }
 
