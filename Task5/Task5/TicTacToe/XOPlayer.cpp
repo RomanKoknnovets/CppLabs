@@ -38,7 +38,7 @@ void XOPlayer::makeMove()
         auto& tn = (*currentNode)[i];
         int wins = currentState().nextIsCross() ? tn.getStatistics()->crossesWin : tn.getStatistics()->noughtsWin;
         int total = tn.getStatistics()->crossesWin + tn.getStatistics()->draws + tn.getStatistics()->noughtsWin;
-        double score = (double)(wins + tn.getStatistics()->draws) / total;
+        double score = ((double)(wins + tn.getStatistics()->draws)) / total;
         if (score > bestScore)
         {
             bestScore = score;
