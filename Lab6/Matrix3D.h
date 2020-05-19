@@ -4,4 +4,4 @@
 struct Matrix3D : public MatrixBase
 {
     Matrix3D() : MatrixBase(3) {}
-}
+};
