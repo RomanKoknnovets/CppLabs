@@ -11,7 +11,7 @@ public:
     void operator*=(int iMult);
     void operator+=(const MatrixBase& iAdd);
 protected:
-    MatrixBase(unsigned int iSize) : m_size(iSize), m_array(new int[iSize * iSize]) {}
+    MatrixBase(unsigned int iSize);
     ~MatrixBase() { delete[] m_array; }
 private:
     int* m_array;
