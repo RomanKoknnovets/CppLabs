@@ -22,15 +22,15 @@ int main()
     fillElements(m2b);
 
     cout << "Первая и вторая матрица после заполнения выглядят так:" << endl;
-    cout << m2a << endl;
+    cout << m2a;
 
     cout << "Складывем их, результат: " << endl;
     m2a += m2b;
-    cout << m2a << endl;
+    cout << m2a;
 
     cout << "Умножаем получившуюся матрицу на число 3, результат: " << endl;
     m2a *= 3;
-    cout << m2a << endl;
+    cout << m2a;
 
 
     cout << "Матрицы 3х3:" << endl;
@@ -40,14 +40,14 @@ int main()
     fillElements(m3a);
     fillElements(m3b);
 
-    cout << "Первая и вторая 2д матрица выглядят так:" << endl;
-    cout << m3a << endl;
+    cout << "Первая и вторая матрица после заполнения выглядят так:" << endl;
+    cout << m3a;
 
     cout << "Складывем их, результат: " << endl;
     m3a += m3b;
-    cout << m3a << endl;
+    cout << m3a;
 
     cout << "Умножаем получившуюся матрицу на число 5, результат: " << endl;
     m3a *= 5;
-    cout << m3a << endl;
+    cout << m3a;
 }
