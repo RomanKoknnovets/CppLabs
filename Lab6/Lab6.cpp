@@ -22,7 +22,10 @@ int main()
     fillElements(m2b);
 
     cout << "Первая и вторая матрица после заполнения выглядят так:" << endl;
+    cout << "Первая:" << endl;
     cout << m2a;
+    cout << "Вторая:" << endl;
+    cout << m2b;
 
     cout << "Складывем их, результат: " << endl;
     m2a += m2b;
@@ -41,7 +44,10 @@ int main()
     fillElements(m3b);
 
     cout << "Первая и вторая матрица после заполнения выглядят так:" << endl;
+    cout << "Первая:" << endl;
     cout << m3a;
+    cout << "Вторая:" << endl;
+    cout << m3b;
 
     cout << "Складывем их, результат: " << endl;
     m3a += m3b;
